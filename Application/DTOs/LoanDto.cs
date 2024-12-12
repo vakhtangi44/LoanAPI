@@ -1,5 +1,4 @@
-﻿
-using Domain.Enums;
+﻿using Domain.Enums;
 
 namespace Application.DTOs
 {
@@ -11,6 +10,5 @@ namespace Application.DTOs
         public CurrencyType Currency { get; set; }
         public int LoanPeriod { get; set; }
         public LoanStatus Status { get; set; }
-        public int UserId { get; set; }
     }
 }

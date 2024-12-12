@@ -1,10 +1,9 @@
 ﻿using Application.DTOs;
-using Application.Interfaces;
-using AutoMapper;
-using Domain.Entities;
+using Application.Exceptions;
+using Application.Mappers;
+using Application.Services.Interfaces;
 using Domain.Enums;
 using Domain.Interfaces;
-using Microsoft.Extensions.Logging;
 
 
 namespace Application.Services
@@ -13,83 +12,83 @@ namespace Application.Services
     {
         private readonly ILoanRepository _loanRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<LoanService> _logger;
 
-        public LoanService(
-            ILoanRepository loanRepository,
-            IUserRepository userRepository,
-            IMapper mapper,
-            ILogger<LoanService> logger)
+        public LoanService(ILoanRepository loanRepository, IUserRepository userRepository)
         {
             _loanRepository = loanRepository;
             _userRepository = userRepository;
-            _mapper = mapper;
-            _logger = logger;
         }
 
-        public async Task<LoanDto> CreateAsync(CreateLoanDto createDto, int userId)
+        public async Task<IEnumerable<LoanDto>> GetLoansByUserIdAsync(int userId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
-            if (user.IsBlocked)
-                throw new ApplicationException("User is blocked from creating loans");
+            if (user == null)
+                throw new NotFoundException($"User with ID {userId} not found.");
 
-            var loan = new Loan(
-                createDto.LoanType,
-                createDto.Amount,
-                createDto.Currency,
-                createDto.LoanPeriod,
-                userId
-            );
+            var loans = await _loanRepository.GetByUserIdAsync(userId);
+            return loans.Select(LoanMapper.ToDto);
+        }
+
+        public async Task<LoanDto> GetLoanByIdAsync(int loanId)
+        {
+            var loan = await _loanRepository.GetByIdAsync(loanId);
+            if (loan == null)
+                throw new NotFoundException($"Loan with ID {loanId} not found.");
+
+            return LoanMapper.ToDto(loan);
+        }
+
+        public async Task AddLoanAsync(LoanDto loanDto, int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException($"User with ID {userId} not found.");
+
+            if (user.IsBlocked)
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "User", new[] { "Blocked users cannot request loans." } }
+                });
+
+            var loan = LoanMapper.ToEntity(loanDto, userId);
+            loan.Status = LoanStatus.Processing;
 
             await _loanRepository.AddAsync(loan);
-            return _mapper.Map<LoanDto>(loan);
         }
 
-        public async Task<LoanDto> UpdateStatusAsync(int loanId, LoanStatus status)
+        public async Task UpdateLoanAsync(LoanDto loanDto)
         {
-            var loan = await _loanRepository.GetByIdAsync(loanId);
+            var loan = await _loanRepository.GetByIdAsync(loanDto.Id);
             if (loan == null)
-                throw new ApplicationException("Loan not found");
-
-            loan.Status = status;
-            await _loanRepository.UpdateAsync(loan);
-
-            return _mapper.Map<LoanDto>(loan);
-        }
-
-        public async Task<bool> DeleteAsync(int loanId, int userId)
-        {
-            var loan = await _loanRepository.GetByIdAsync(loanId);
-            if (loan == null)
-                throw new ApplicationException("Loan not found");
-
-            if (loan.UserId != userId)
-                throw new ApplicationException("Not authorized to delete this loan");
+                throw new NotFoundException($"Loan with ID {loanDto.Id} not found.");
 
             if (loan.Status != LoanStatus.Processing)
-                throw new ApplicationException("Can only delete loans in processing status");
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "Loan", new[] { "Only loans in 'Processing' status can be updated." } }
+                });
 
-            await _loanRepository.DeleteAsync(loanId);
-            return true;
+            loan.LoanType = loanDto.LoanType;
+            loan.Amount = loanDto.Amount;
+            loan.Currency = loanDto.Currency;
+            loan.LoanPeriod = loanDto.LoanPeriod;
+
+            await _loanRepository.UpdateAsync(loan);
         }
 
-        public async Task<LoanDto> GetByIdAsync(int loanId)
+        public async Task DeleteLoanAsync(int loanId)
         {
             var loan = await _loanRepository.GetByIdAsync(loanId);
-            return _mapper.Map<LoanDto>(loan);
-        }
+            if (loan == null)
+                throw new NotFoundException($"Loan with ID {loanId} not found.");
 
-        public async Task<IEnumerable<LoanDto>> GetUserLoansAsync(int userId)
-        {
-            var loans = await _loanRepository.GetByUserIdAsync(userId);
-            return _mapper.Map<IEnumerable<LoanDto>>(loans);
-        }
+            if (loan.Status != LoanStatus.Processing)
+                throw new ValidationException(new Dictionary<string, string[]>
+                {
+                    { "Loan", new[] { "Only loans in 'Processing' status can be deleted." } }
+                });
 
-        public async Task<IEnumerable<LoanDto>> GetAllLoansAsync()
-        {
-            var loans = await _loanRepository.GetByUserIdAsync(0);
-            return _mapper.Map<IEnumerable<LoanDto>>(loans);
+            await _loanRepository.DeleteAsync(loanId);
         }
     }
 }
