@@ -3,7 +3,7 @@ using Application.Exceptions;
 using Application.Mappers;
 using Application.Services.Interfaces;
 using Domain.Enums;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
 
 
 namespace Application.Services
