@@ -1,13 +1,14 @@
-﻿using Application.DTOs;
+﻿using Application.DTOs.Auth;
 using FluentValidation;
 
-namespace Application.Validators
+namespace Application.Validators.Auth
 {
-    public class UserValidator : AbstractValidator<UserDto>
+    public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {
-        public UserValidator()
+        public RegisterRequestValidator()
         {
-            RuleFor(x => x.FirstName).NotEmpty()
+            RuleFor(x => x.FirstName)
+                .NotEmpty()
                 .MaximumLength(50);
 
             RuleFor(x => x.LastName)
@@ -21,6 +22,10 @@ namespace Application.Validators
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .EmailAddress();
+
+            RuleFor(x => x.Password)
+                .NotEmpty()
+                .MinimumLength(6);
 
             RuleFor(x => x.Age)
                 .InclusiveBetween(18, 100);

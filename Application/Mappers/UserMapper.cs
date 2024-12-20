@@ -5,8 +5,9 @@ namespace Application.Mappers
 {
     public static class UserMapper
     {
-        public static UserDto ToDto(User user) =>
-            new UserDto
+        public static UserDto ToDto(User user)
+        {
+            return new UserDto
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -17,8 +18,21 @@ namespace Application.Mappers
                 MonthlyIncome = user.MonthlyIncome,
                 IsBlocked = user.IsBlocked
             };
+        }
 
-        public static User ToEntity(UserDto dto) =>
-            new User(dto.FirstName, dto.LastName, dto.UserName, dto.Email, dto.Age, dto.MonthlyIncome, string.Empty);
+        public static User ToEntity(UserDto dto)
+        {
+            return new User
+            {
+                Id = dto.Id,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                UserName = dto.UserName,
+                Email = dto.Email,
+                Age = dto.Age,
+                MonthlyIncome = dto.MonthlyIncome,
+                IsBlocked = dto.IsBlocked
+            };
+        }
     }
 }

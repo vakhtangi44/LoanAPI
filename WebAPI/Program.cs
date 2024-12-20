@@ -1,5 +1,4 @@
 using System.Text;
-using Application.Services.Interfaces;
 using Application.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +8,7 @@ using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation.AspNetCore;
 using Domain.Interfaces.Repositories;
+using Application.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
