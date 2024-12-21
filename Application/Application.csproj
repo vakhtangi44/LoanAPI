@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Mappers\ujl4ioix.dz1~" />
+    <None Remove="Mappers\UserMapper.cs~RF30e7d81.TMP" />
   </ItemGroup>
 
   <ItemGroup>

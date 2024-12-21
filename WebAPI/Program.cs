@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebAPI.MIddlewares;
 using Infrastructure.Persistence.Repositories;
-using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation.AspNetCore;
 using Domain.Interfaces.Repositories;
 using Application.Interfaces;
+using Infrastructure.Persistence.Context;
 
 
 var builder = WebApplication.CreateBuilder(args);

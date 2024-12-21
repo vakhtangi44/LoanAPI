@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
+using Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
@@ -49,6 +50,10 @@ namespace Infrastructure.Persistence.Repositories
         {
             var user = await _dbContext.Users.FindAsync(id);
             return user?.IsBlocked ?? false;
+        }
+        public async Task<User> GetByUsernameAsync(string username)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
         }
     }
 }
