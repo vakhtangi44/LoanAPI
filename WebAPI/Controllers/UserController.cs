@@ -1,11 +1,14 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Auth;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -13,6 +16,13 @@ namespace WebAPI.Controllers
         public UserController(IUserService userService)
         {
             _userService = userService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userService.GetAllAsync();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
@@ -23,10 +33,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(UserDto userDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterUser(RegisterRequest request)
         {
-            await _userService.AddAsync(userDto);
-            return CreatedAtAction(nameof(GetUserById), new { id = userDto.Id }, userDto);
+            await _userService.AddAsync(request);
+            return StatusCode(201);
         }
 
         [HttpPut]

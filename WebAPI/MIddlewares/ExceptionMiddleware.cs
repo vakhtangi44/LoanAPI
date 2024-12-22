@@ -1,7 +1,4 @@
-﻿using Domain.Entities;
-using Infrastructure.Persistence.Context;
-using System.Net;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace WebAPI.MIddlewares
 {
@@ -14,7 +11,7 @@ namespace WebAPI.MIddlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, LoanDbContext dbContext)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
@@ -22,34 +19,12 @@ namespace WebAPI.MIddlewares
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, dbContext, ex);
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+                var response = new { Message = ex.Message };
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
             }
-        }
-
-        private async Task HandleExceptionAsync(HttpContext context, LoanDbContext dbContext, Exception ex)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            // Log error to database
-            var errorLog = new ErrorLog
-            {
-                Message = ex.Message,
-                StackTrace = ex.StackTrace,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            dbContext.ErrorLogs.Add(errorLog);
-            await dbContext.SaveChangesAsync();
-
-            var response = new
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = "An internal server error occurred. Please contact support.",
-                Details = ex.Message
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }
 }

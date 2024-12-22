@@ -1,11 +1,13 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class LoanController : ControllerBase
     {
         private readonly ILoanService _loanService;
@@ -16,7 +18,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetLoansByUserId(int userId)
+        public async Task<IActionResult> GetUserLoans(int userId)
         {
             var loans = await _loanService.GetLoansByUserIdAsync(userId);
             return Ok(loans);
@@ -26,7 +28,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> AddLoan(int userId, LoanDto loanDto)
         {
             await _loanService.AddLoanAsync(loanDto, userId);
-            return Ok(loanDto);
+            return StatusCode(201);
         }
 
         [HttpPut]
@@ -36,10 +38,10 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLoan(int id)
+        [HttpDelete("{loanId}")]
+        public async Task<IActionResult> DeleteLoan(int loanId)
         {
-            await _loanService.DeleteLoanAsync(id);
+            await _loanService.DeleteLoanAsync(loanId);
             return NoContent();
         }
     }
