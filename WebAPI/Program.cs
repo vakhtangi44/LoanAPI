@@ -28,8 +28,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("UserDatabase")));
-//builder.Services.AddDbContext<UserDbContext>(options =>
-//  options.UseSqlServer(builder.Configuration.GetConnectionString("LoanDatabase")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
@@ -78,7 +76,6 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var userContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-    //var loanContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
 
     try
     {

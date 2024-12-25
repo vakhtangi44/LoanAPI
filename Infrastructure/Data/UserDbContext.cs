@@ -15,12 +15,11 @@ namespace Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // User entity configuration
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd(); // Auto-increment for Id
+                    .ValueGeneratedOnAdd();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Surname).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(20);
@@ -34,7 +33,6 @@ namespace Infrastructure.Data
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
-            // Loan entity configuration
             modelBuilder.Entity<Loan>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -46,14 +44,12 @@ namespace Infrastructure.Data
                 entity.Property(e => e.Status).IsRequired();
                 entity.Property(e => e.CreatedAt).IsRequired();
 
-                // Foreign key relationship with User
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Loans)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete loans when a user is deleted
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // ExceptionLog entity configuration
             modelBuilder.Entity<ExceptionLog>(entity =>
             {
                 entity.HasKey(e => e.Id);
