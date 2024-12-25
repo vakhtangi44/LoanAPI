@@ -34,7 +34,6 @@ namespace WebAPI.MIddleware
         {
             var exceptionLog = new ExceptionLog
             {
-                Id = Guid.NewGuid(),
                 Message = exception.Message,
                 StackTrace = exception.StackTrace,
                 Source = exception.Source,

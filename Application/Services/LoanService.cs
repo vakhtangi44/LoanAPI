@@ -24,7 +24,7 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<Loan> GetLoanByIdAsync(Guid id)
+        public async Task<Loan> GetLoanByIdAsync(int id)
         {
             var loan = await _loanRepository.GetByIdAsync(id);
             if (loan == null)
@@ -32,7 +32,7 @@ namespace Application.Services
             return loan;
         }
 
-        public async Task<IEnumerable<Loan>> GetUserLoansAsync(Guid userId)
+        public async Task<IEnumerable<Loan>> GetUserLoansAsync(int userId)
         {
             if (!await _userRepository.ExistsAsync(userId))
                 throw new UserNotFoundException(userId);
@@ -51,7 +51,7 @@ namespace Application.Services
             return await _loanRepository.CreateAsync(loan);
         }
 
-        public async Task<Loan> UpdateLoanAsync(Guid id, Loan loanUpdate)
+        public async Task<Loan> UpdateLoanAsync(int id, Loan loanUpdate)
         {
             var loan = await GetLoanByIdAsync(id);
 
@@ -65,7 +65,7 @@ namespace Application.Services
             return await _loanRepository.UpdateAsync(loan);
         }
 
-        public async Task<Loan> UpdateLoanStatusAsync(Guid id, LoanStatus status)
+        public async Task<Loan> UpdateLoanStatusAsync(int id, LoanStatus status)
         {
             var loan = await GetLoanByIdAsync(id);
             loan.Status = status;
@@ -74,7 +74,7 @@ namespace Application.Services
             return await _loanRepository.UpdateAsync(loan);
         }
 
-        public async Task DeleteLoanAsync(Guid id)
+        public async Task DeleteLoanAsync(int id)
         {
             var loan = await GetLoanByIdAsync(id);
 

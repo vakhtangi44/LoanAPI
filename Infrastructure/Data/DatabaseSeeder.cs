@@ -18,7 +18,6 @@ namespace Infrastructure.Data
 
                 var user = new User
                 {
-                    Id = Guid.NewGuid(),
                     Name = "Gela",
                     Surname = "Barkalaia",
                     Username = "GoatGb",

@@ -26,20 +26,20 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<LoanDto>> GetLoan(Guid id)
+        public async Task<ActionResult<LoanDto>> GetLoan(int id)
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Forbid();
 
             return _mapper.Map<LoanDto>(loan);
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<LoanDto>>> GetUserLoans(Guid userId)
+        public async Task<ActionResult<IEnumerable<LoanDto>>> GetUserLoans(int userId)
         {
-            if (User.IsInRole("User") && userId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Forbid();
 
             var loans = await _loanService.GetUserLoansAsync(userId);
@@ -49,7 +49,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LoanDto>> CreateLoan(CreateLoanDto createLoanDto)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             if (await _userService.IsUserBlockedAsync(userId))
                 return BadRequest("User is blocked from creating loans");
@@ -62,11 +62,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<LoanDto>> UpdateLoan(Guid id, UpdateLoanDto updateLoanDto)
+        public async Task<ActionResult<LoanDto>> UpdateLoan(int id, UpdateLoanDto updateLoanDto)
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Forbid();
 
             if (loan.Status != LoanStatus.InProcess)
@@ -78,11 +78,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteLoan(Guid id)
+        public async Task<ActionResult> DeleteLoan(int id)
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Forbid();
 
             if (loan.Status != LoanStatus.InProcess)

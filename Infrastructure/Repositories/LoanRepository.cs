@@ -15,7 +15,7 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Loan> GetByIdAsync(Guid id)
+        public async Task<Loan> GetByIdAsync(int id)
         {
             return await _context.Loans.FindAsync(id);
         }
@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             return await _context.Loans.ToListAsync();
         }
 
-        public async Task<IEnumerable<Loan>> GetByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<Loan>> GetByUserIdAsync(int userId)
         {
             return await _context.Loans
                 .Where(l => l.UserId == userId)
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
             return loan;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(int id)
         {
             var loan = await GetByIdAsync(id);
             if (loan != null)
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(Guid id)
+        public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Loans.AnyAsync(l => l.Id == id);
         }

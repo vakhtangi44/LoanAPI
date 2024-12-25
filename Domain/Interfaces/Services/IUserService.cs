@@ -3,13 +3,13 @@ namespace Domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<User> GetUserByIdAsync(Guid id);
+        Task<User> GetUserByIdAsync(int id);
         Task<User> CreateUserAsync(User user);
-        Task<User> UpdateUserAsync(Guid id, User user);
-        Task DeleteUserAsync(Guid id);
-        Task<User> BlockUserAsync(Guid id, DateTime until);
-        Task<User> UnblockUserAsync(Guid id);
-        Task<bool> IsUserBlockedAsync(Guid id);
+        Task<User> UpdateUserAsync(int id, User user);
+        Task DeleteUserAsync(int id);
+        Task<User> BlockUserAsync(int id, DateTime until);
+        Task<User> UnblockUserAsync(int id);
+        Task<bool> IsUserBlockedAsync(int id);
         Task<IEnumerable<User>> GetAllUsersAsync();
     }
 }

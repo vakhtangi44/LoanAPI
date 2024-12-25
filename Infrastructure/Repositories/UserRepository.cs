@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<User> GetByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
         }
@@ -48,7 +48,7 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(int id)
         {
             var user = await GetByIdAsync(id);
             if (user != null)
@@ -58,12 +58,12 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> ExistsAsync(Guid id)
+        public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Users.AnyAsync(u => u.Id == id);
         }
 
-        public async Task<bool> IsBlockedAsync(Guid id)
+        public async Task<bool> IsBlockedAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);
             return user != null && user.IsBlocked;

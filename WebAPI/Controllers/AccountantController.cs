@@ -31,21 +31,21 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("loans/{id}/status")]
-        public async Task<ActionResult<LoanDto>> UpdateLoanStatus(Guid id, LoanStatus status)
+        public async Task<ActionResult<LoanDto>> UpdateLoanStatus(int id, LoanStatus status)
         {
             var loan = await _loanService.UpdateLoanStatusAsync(id, status);
             return _mapper.Map<LoanDto>(loan);
         }
 
         [HttpPost("users/{userId}/block")]
-        public async Task<ActionResult> BlockUser(Guid userId, DateTime until)
+        public async Task<ActionResult> BlockUser(int userId, DateTime until)
         {
             await _userService.BlockUserAsync(userId, until);
             return Ok();
         }
 
         [HttpPost("users/{userId}/unblock")]
-        public async Task<ActionResult> UnblockUser(Guid userId)
+        public async Task<ActionResult> UnblockUser(int userId)
         {
             await _userService.UnblockUserAsync(userId);
             return Ok();

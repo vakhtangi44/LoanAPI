@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ExceptionLog> GetByIdAsync(Guid id)
+        public async Task<ExceptionLog> GetByIdAsync(int id)
         {
             return await _context.ExceptionLogs.FindAsync(id);
         }

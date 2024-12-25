@@ -19,7 +19,7 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<User> GetUserByIdAsync(Guid id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
@@ -35,7 +35,7 @@ namespace Application.Services
             return await _userRepository.CreateAsync(user);
         }
 
-        public async Task<User> UpdateUserAsync(Guid id, User userUpdate)
+        public async Task<User> UpdateUserAsync(int id, User userUpdate)
         {
             var user = await GetUserByIdAsync(id);
             user.Name = userUpdate.Name;
@@ -47,7 +47,7 @@ namespace Application.Services
             return await _userRepository.UpdateAsync(user);
         }
 
-        public async Task<User> BlockUserAsync(Guid id, DateTime until)
+        public async Task<User> BlockUserAsync(int id, DateTime until)
         {
             var user = await GetUserByIdAsync(id);
             user.IsBlocked = true;
@@ -57,7 +57,7 @@ namespace Application.Services
             return await _userRepository.UpdateAsync(user);
         }
 
-        public async Task<User> UnblockUserAsync(Guid id)
+        public async Task<User> UnblockUserAsync(int id)
         {
             var user = await GetUserByIdAsync(id);
             user.IsBlocked = false;
@@ -67,13 +67,13 @@ namespace Application.Services
             return await _userRepository.UpdateAsync(user);
         }
 
-        public async Task DeleteUserAsync(Guid id)
+        public async Task DeleteUserAsync(int id)
         {
             await GetUserByIdAsync(id);
             await _userRepository.DeleteAsync(id);
         }
 
-        public async Task<bool> IsUserBlockedAsync(Guid id)
+        public async Task<bool> IsUserBlockedAsync(int id)
         {
             return await _userRepository.IsBlockedAsync(id);
         }

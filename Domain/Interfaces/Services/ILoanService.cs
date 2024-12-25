@@ -5,12 +5,12 @@ namespace Domain.Interfaces.Services
 {
     public interface ILoanService
     {
-        Task<Loan> GetLoanByIdAsync(Guid id);
-        Task<IEnumerable<Loan>> GetUserLoansAsync(Guid userId);
+        Task<Loan> GetLoanByIdAsync(int id);
+        Task<IEnumerable<Loan>> GetUserLoansAsync(int userId);
         Task<Loan> CreateLoanAsync(Loan loan);
-        Task<Loan> UpdateLoanAsync(Guid id, Loan loan);
-        Task DeleteLoanAsync(Guid id);
-        Task<Loan> UpdateLoanStatusAsync(Guid id, LoanStatus status);
+        Task<Loan> UpdateLoanAsync(int id, Loan loan);
+        Task DeleteLoanAsync(int id);
+        Task<Loan> UpdateLoanStatusAsync(int id, LoanStatus status);
         Task<IEnumerable<Loan>> GetAllLoansAsync();
     }
 }

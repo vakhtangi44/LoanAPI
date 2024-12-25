@@ -27,7 +27,7 @@ namespace UnitTests.Services
         public async Task GetUserByIdAsync_UserExists_ReturnsUser()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var user = new User { Id = userId };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -43,7 +43,7 @@ namespace UnitTests.Services
         public async Task GetUserByIdAsync_UserDoesNotExist_ThrowsUserNotFoundException()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync((User)null);
 
@@ -57,7 +57,7 @@ namespace UnitTests.Services
             // Arrange
             var user = new User { PasswordHash = "plainPassword" };
             var hashedPassword = "hashedPassword";
-            var createdUser = new User { Id = Guid.NewGuid(), PasswordHash = hashedPassword };
+            var createdUser = new User { Id = int.Newint(), PasswordHash = hashedPassword };
 
             _passwordHasherMock.Setup(h => h.HashPassword(user.PasswordHash)).Returns(hashedPassword);
             _userRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<User>())).ReturnsAsync(createdUser);
@@ -74,7 +74,7 @@ namespace UnitTests.Services
         public async Task UpdateUserAsync_ValidUser_UpdatesUser()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var existingUser = new User { Id = userId };
             var userUpdate = new User { Name = "UpdatedName", Email = "updated@example.com" };
 
@@ -93,7 +93,7 @@ namespace UnitTests.Services
         public async Task BlockUserAsync_ValidUser_BlocksUser()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var blockUntil = DateTime.UtcNow.AddDays(1);
             var user = new User { Id = userId };
 
@@ -112,7 +112,7 @@ namespace UnitTests.Services
         public async Task UnblockUserAsync_ValidUser_UnblocksUser()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var user = new User { Id = userId, IsBlocked = true, BlockedUntil = DateTime.UtcNow.AddDays(1) };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -130,7 +130,7 @@ namespace UnitTests.Services
         public async Task DeleteUserAsync_ValidUser_DeletesUser()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var user = new User { Id = userId };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -146,7 +146,7 @@ namespace UnitTests.Services
         public async Task IsUserBlockedAsync_UserExists_ReturnsBlockedStatus()
         {
             // Arrange
-            var userId = Guid.NewGuid();
+            var userId = int.Newint();
             var isBlocked = true;
 
             _userRepositoryMock.Setup(r => r.IsBlockedAsync(userId)).ReturnsAsync(isBlocked);
@@ -162,7 +162,7 @@ namespace UnitTests.Services
         public async Task GetAllUsersAsync_ReturnsAllUsers()
         {
             // Arrange
-            var users = new List<User> { new User { Id = Guid.NewGuid() }, new User { Id = Guid.NewGuid() } };
+            var users = new List<User> { new User { Id = int.Newint() }, new User { Id = int.Newint() } };
 
             _userRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(users);
 

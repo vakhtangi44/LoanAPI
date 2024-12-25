@@ -39,7 +39,7 @@ namespace UnitTests.Services
             public async Task GetLoanByIdAsync_LoanExists_ReturnsLoan()
             {
                 // Arrange
-                var loanId = Guid.NewGuid();
+                var loanId = int.Newint();
                 var loan = new Loan { Id = loanId };
 
                 _loanRepositoryMock.Setup(r => r.GetByIdAsync(loanId)).ReturnsAsync(loan);
@@ -55,7 +55,7 @@ namespace UnitTests.Services
             public async Task GetLoanByIdAsync_LoanDoesNotExist_ThrowsLoanNotFoundException()
             {
                 // Arrange
-                var loanId = Guid.NewGuid();
+                var loanId = int.Newint();
 
                 _loanRepositoryMock.Setup(r => r.GetByIdAsync(loanId)).ReturnsAsync((Loan)null);
 
@@ -67,7 +67,7 @@ namespace UnitTests.Services
             public async Task GetUserLoansAsync_UserExists_ReturnsLoans()
             {
                 // Arrange
-                var userId = Guid.NewGuid();
+                var userId = int.Newint();
                 var loans = new List<Loan> { new Loan { UserId = userId } };
 
                 _userRepositoryMock.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(true);
@@ -84,7 +84,7 @@ namespace UnitTests.Services
             public async Task GetUserLoansAsync_UserDoesNotExist_ThrowsUserNotFoundException()
             {
                 // Arrange
-                var userId = Guid.NewGuid();
+                var userId = int.Newint();
 
                 _userRepositoryMock.Setup(r => r.ExistsAsync(userId)).ReturnsAsync(false);
 
@@ -96,7 +96,7 @@ namespace UnitTests.Services
             public async Task CreateLoanAsync_UserIsBlocked_ThrowsInvalidOperationException()
             {
                 // Arrange
-                var userId = Guid.NewGuid();
+                var userId = int.Newint();
                 var loan = new Loan { UserId = userId };
 
                 _userRepositoryMock.Setup(r => r.IsBlockedAsync(userId)).ReturnsAsync(true);
@@ -109,9 +109,9 @@ namespace UnitTests.Services
             public async Task CreateLoanAsync_ValidLoan_CreatesLoan()
             {
                 // Arrange
-                var userId = Guid.NewGuid();
+                var userId = int.Newint();
                 var loan = new Loan { UserId = userId, Amount = 1000, Period = 12 };
-                var createdLoan = new Loan { Id = Guid.NewGuid(), UserId = userId, Amount = 1000, Period = 12, Status = LoanStatus.InProcess };
+                var createdLoan = new Loan { Id = int.Newint(), UserId = userId, Amount = 1000, Period = 12, Status = LoanStatus.InProcess };
 
                 _userRepositoryMock.Setup(r => r.IsBlockedAsync(userId)).ReturnsAsync(false);
                 _loanRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<Loan>())).ReturnsAsync(createdLoan);
@@ -127,7 +127,7 @@ namespace UnitTests.Services
             public async Task UpdateLoanAsync_LoanNotInProcess_ThrowsInvalidOperationException()
             {
                 // Arrange
-                var loanId = Guid.NewGuid();
+                var loanId = int.Newint();
                 var existingLoan = new Loan { Id = loanId, Status = LoanStatus.Approved };
 
                 _loanRepositoryMock.Setup(r => r.GetByIdAsync(loanId)).ReturnsAsync(existingLoan);
@@ -142,7 +142,7 @@ namespace UnitTests.Services
             public async Task DeleteLoanAsync_LoanNotInProcess_ThrowsInvalidOperationException()
             {
                 // Arrange
-                var loanId = Guid.NewGuid();
+                var loanId = int.Newint();
                 var loan = new Loan { Id = loanId, Status = LoanStatus.Approved };
 
                 _loanRepositoryMock.Setup(r => r.GetByIdAsync(loanId)).ReturnsAsync(loan);
@@ -155,7 +155,7 @@ namespace UnitTests.Services
             public async Task UpdateLoanStatusAsync_ValidLoan_UpdatesStatus()
             {
                 // Arrange
-                var loanId = Guid.NewGuid();
+                var loanId = int.Newint();
                 var loan = new Loan { Id = loanId, Status = LoanStatus.InProcess };
 
                 _loanRepositoryMock.Setup(r => r.GetByIdAsync(loanId)).ReturnsAsync(loan);
@@ -172,7 +172,7 @@ namespace UnitTests.Services
             public async Task GetAllLoansAsync_ReturnsAllLoans()
             {
                 // Arrange
-                var loans = new List<Loan> { new Loan { Id = Guid.NewGuid() }, new Loan { Id = Guid.NewGuid() } };
+                var loans = new List<Loan> { new Loan { Id = int.Newint() }, new Loan { Id = int.Newint() } };
 
                 _loanRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(loans);
 
