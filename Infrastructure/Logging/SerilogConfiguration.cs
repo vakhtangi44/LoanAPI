@@ -2,8 +2,6 @@
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using System.Collections.ObjectModel;
-using System.Data;
 
 namespace Infrastructure.Logging
 {
@@ -11,7 +9,7 @@ namespace Infrastructure.Logging
     {
         public static void ConfigureSerilog(IConfiguration configuration)
         {
-            var columnOptions = new ColumnOptions();  // Use default column options
+            var columnOptions = new ColumnOptions();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
