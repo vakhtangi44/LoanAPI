@@ -8,12 +8,12 @@ namespace WebAPI.MIddleware
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IExceptionLogRepository _exceptionLogRepository;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, IExceptionLogRepository exceptionLogRepository)
+        public ExceptionHandlingMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
         {
             _next = next;
-            _exceptionLogRepository = exceptionLogRepository;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -24,11 +24,13 @@ namespace WebAPI.MIddleware
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex);
+                using var scope = _serviceScopeFactory.CreateScope();
+                var exceptionLogRepository = scope.ServiceProvider.GetRequiredService<IExceptionLogRepository>();
+                await HandleExceptionAsync(context, ex, exceptionLogRepository);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception, IExceptionLogRepository exceptionLogRepository)
         {
             var exceptionLog = new ExceptionLog
             {
@@ -41,7 +43,7 @@ namespace WebAPI.MIddleware
                 UserIdentifier = context.User?.Identity?.Name
             };
 
-            await _exceptionLogRepository.LogAsync(exceptionLog);
+            await exceptionLogRepository.LogAsync(exceptionLog);
 
             var response = new
             {
