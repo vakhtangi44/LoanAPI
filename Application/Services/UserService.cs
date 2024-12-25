@@ -26,7 +26,7 @@ namespace Application.Services
 
         public async Task<User> CreateUserAsync(User user)
         {
-            user.PasswordHash = _passwordHasher.HashPassword(user.PasswordHash);
+            user.PasswordHash = _passwordHasher.HashPassword(user.PasswordHash!);
             user.CreatedAt = DateTime.UtcNow;
             user.IsBlocked = false;
             return await _userRepository.CreateAsync(user);
