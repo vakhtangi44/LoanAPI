@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
@@ -12,16 +11,13 @@ namespace Application.Services
     {
         private readonly ILoanRepository _loanRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
 
         public LoanService(
             ILoanRepository loanRepository,
-            IUserRepository userRepository,
-            IMapper mapper)
+            IUserRepository userRepository)
         {
             _loanRepository = loanRepository;
             _userRepository = userRepository;
-            _mapper = mapper;
         }
 
         public async Task<Loan> GetLoanByIdAsync(int id)

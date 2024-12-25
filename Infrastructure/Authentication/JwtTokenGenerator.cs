@@ -19,16 +19,16 @@ namespace Infrastructure.Authentication
 
         public async Task<string> GenerateTokenAsync(User user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), 
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.Name, user.Username !),
+                new Claim(ClaimTypes.Email, user.Email !),
+                new Claim(ClaimTypes.Role, user.Role!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
@@ -46,7 +46,7 @@ namespace Infrastructure.Authentication
         public async Task<bool> ValidateTokenAsync(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
 
             try
             {
@@ -59,7 +59,7 @@ namespace Infrastructure.Authentication
                     ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidAudience = _configuration["Jwt:Audience"],
                     ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
+                }, out _);
 
                 return await Task.FromResult(true);
             }

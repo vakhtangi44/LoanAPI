@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.Enums;
 
 namespace Domain.Interfaces.Repositories
 {
@@ -11,7 +10,5 @@ namespace Domain.Interfaces.Repositories
         Task<Loan> CreateAsync(Loan loan);
         Task<Loan> UpdateAsync(Loan loan);
         Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(int id);
-        Task<IEnumerable<Loan>> GetByStatusAsync(LoanStatus status);
     }
 }

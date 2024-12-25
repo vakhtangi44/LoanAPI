@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
 
         public async Task<ExceptionLog> GetByIdAsync(int id)
         {
-            return await _context.ExceptionLogs.FindAsync(id);
+            return (await _context.ExceptionLogs.FindAsync(id))!;
         }
     }
 }

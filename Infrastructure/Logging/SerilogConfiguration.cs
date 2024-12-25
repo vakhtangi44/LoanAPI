@@ -9,8 +9,6 @@ namespace Infrastructure.Logging
     {
         public static void ConfigureSerilog(IConfiguration configuration)
         {
-            var columnOptions = new ColumnOptions();
-
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)

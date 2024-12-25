@@ -16,17 +16,17 @@ namespace Infrastructure.Repositories
 
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return (await _context.Users.FindAsync(id))!;
         }
 
         public async Task<User> GetByUsernameAsync(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return (await _context.Users.FirstOrDefaultAsync(u => u.Username == username))!;
         }
 
         public async Task<User> GetByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return (await _context.Users.FirstOrDefaultAsync(u => u.Email == email))!;
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
         public async Task DeleteAsync(int id)
         {
             var user = await GetByIdAsync(id);
-            if (user != null)
+            if (true)
             {
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();

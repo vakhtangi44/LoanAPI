@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("users/{userId}/block")]
-        public async Task<ActionResult> BlockUser(int userId, [FromBody] BlockUserDto blockUserDto)
+        public async Task<ActionResult> BlockUser(int userId, [FromBody] BlockUserDto? blockUserDto)
         {
             if (blockUserDto == null || blockUserDto.Until == default)
                 return BadRequest("Invalid block duration provided.");

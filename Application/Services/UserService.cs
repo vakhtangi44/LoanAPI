@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -10,13 +9,11 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
-            _mapper = mapper;
         }
 
         public async Task<User> GetUserByIdAsync(int id)

@@ -1,5 +1,4 @@
 ﻿using Application.Services;
-using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
@@ -12,22 +11,20 @@ namespace UnitTests.Services
     {
         private readonly Mock<IUserRepository> _userRepositoryMock;
         private readonly Mock<IPasswordHasher> _passwordHasherMock;
-        private readonly Mock<IMapper> _mapperMock;
         private readonly UserService _userService;
 
         public UserServiceTests()
         {
             _userRepositoryMock = new Mock<IUserRepository>();
             _passwordHasherMock = new Mock<IPasswordHasher>();
-            _mapperMock = new Mock<IMapper>();
-            _userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, _mapperMock.Object);
+            _userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object);
         }
 
         [Fact]
         public async Task GetUserByIdAsync_UserExists_ReturnsUser()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var user = new User { Id = userId };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -43,9 +40,9 @@ namespace UnitTests.Services
         public async Task GetUserByIdAsync_UserDoesNotExist_ThrowsUserNotFoundException()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
 
-            _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync((User)null);
+            _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync((User)null!);
 
             // Act & Assert
             await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.GetUserByIdAsync(userId));
@@ -57,7 +54,7 @@ namespace UnitTests.Services
             // Arrange
             var user = new User { PasswordHash = "plainPassword" };
             var hashedPassword = "hashedPassword";
-            var createdUser = new User { Id = int.Newint(), PasswordHash = hashedPassword };
+            var createdUser = new User { Id = 1, PasswordHash = hashedPassword };
 
             _passwordHasherMock.Setup(h => h.HashPassword(user.PasswordHash)).Returns(hashedPassword);
             _userRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<User>())).ReturnsAsync(createdUser);
@@ -74,7 +71,7 @@ namespace UnitTests.Services
         public async Task UpdateUserAsync_ValidUser_UpdatesUser()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var existingUser = new User { Id = userId };
             var userUpdate = new User { Name = "UpdatedName", Email = "updated@example.com" };
 
@@ -93,7 +90,7 @@ namespace UnitTests.Services
         public async Task BlockUserAsync_ValidUser_BlocksUser()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var blockUntil = DateTime.UtcNow.AddDays(1);
             var user = new User { Id = userId };
 
@@ -112,7 +109,7 @@ namespace UnitTests.Services
         public async Task UnblockUserAsync_ValidUser_UnblocksUser()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var user = new User { Id = userId, IsBlocked = true, BlockedUntil = DateTime.UtcNow.AddDays(1) };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -130,7 +127,7 @@ namespace UnitTests.Services
         public async Task DeleteUserAsync_ValidUser_DeletesUser()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var user = new User { Id = userId };
 
             _userRepositoryMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
@@ -146,7 +143,7 @@ namespace UnitTests.Services
         public async Task IsUserBlockedAsync_UserExists_ReturnsBlockedStatus()
         {
             // Arrange
-            var userId = int.Newint();
+            var userId = 1;
             var isBlocked = true;
 
             _userRepositoryMock.Setup(r => r.IsBlockedAsync(userId)).ReturnsAsync(isBlocked);
@@ -162,7 +159,7 @@ namespace UnitTests.Services
         public async Task GetAllUsersAsync_ReturnsAllUsers()
         {
             // Arrange
-            var users = new List<User> { new User { Id = int.Newint() }, new User { Id = int.Newint() } };
+            var users = new List<User> { new User { Id = 1 }, new User { Id = 1 } };
 
             _userRepositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(users);
 

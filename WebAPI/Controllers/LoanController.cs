@@ -30,7 +30,7 @@ namespace WebAPI.Controllers
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
             return _mapper.Map<LoanDto>(loan);
@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<LoanDto>>> GetUserLoans(int userId)
         {
-            if (User.IsInRole("User") && userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
             var loans = await _loanService.GetUserLoansAsync(userId);
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
             if (loan.Status != LoanStatus.InProcess)
@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
         {
             var loan = await _loanService.GetLoanByIdAsync(id);
 
-            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
             if (loan.Status != LoanStatus.InProcess)

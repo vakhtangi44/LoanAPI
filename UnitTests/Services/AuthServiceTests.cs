@@ -108,7 +108,7 @@ namespace UnitTests.Services
         public async Task GenerateTokenAsync_ValidUser_ReturnsToken()
         {
             // Arrange
-            var user = new User { Id = int.Newint(), Username = "testuser" };
+            var user = new User { Id = 1, Username = "testuser" };
             var token = "generatedToken";
 
             _jwtTokenGeneratorMock.Setup(t => t.GenerateTokenAsync(user)).ReturnsAsync(token);

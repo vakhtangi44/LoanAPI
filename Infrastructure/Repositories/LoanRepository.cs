@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Loan> GetByIdAsync(int id)
         {
-            return await _context.Loans.FindAsync(id);
+            return (await _context.Loans.FindAsync(id))!;
         }
 
         public async Task<IEnumerable<Loan>> GetAllAsync()
@@ -49,11 +49,8 @@ namespace Infrastructure.Repositories
         public async Task DeleteAsync(int id)
         {
             var loan = await GetByIdAsync(id);
-            if (loan != null)
-            {
-                _context.Loans.Remove(loan);
-                await _context.SaveChangesAsync();
-            }
+            _context.Loans.Remove(loan);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ExistsAsync(int id)
