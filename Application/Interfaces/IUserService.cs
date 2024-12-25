@@ -1,5 +1,4 @@
 ﻿using Application.DTOs;
-using Application.DTOs.Auth;
 
 namespace Application.Interfaces
 {
@@ -7,7 +6,7 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<UserDto>> GetAllAsync();
         Task<UserDto> GetByIdAsync(int id);
-        Task AddAsync(RegisterRequest request);
+        Task AddAsync(UserDto userDto);
         Task UpdateAsync(UserDto userDto);
         Task DeleteAsync(int id);
     }

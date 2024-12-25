@@ -3,14 +3,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Infrastructure.Authentication
+namespace Infrastructure.Security
 {
-    public class JwtTokenGenerator
+    public class JwtAuthentication
     {
         private readonly string _secret;
         private readonly string _issuer;
 
-        public JwtTokenGenerator(string secret, string issuer)
+        public JwtAuthentication(string secret, string issuer)
         {
             _secret = secret;
             _issuer = issuer;
@@ -23,7 +23,6 @@ namespace Infrastructure.Authentication
 
             var tokenDescriptor = new JwtSecurityToken(
                 issuer: _issuer,
-                audience: null,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
                 signingCredentials: credentials);

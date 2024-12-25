@@ -2,7 +2,7 @@
 {
     public enum LoanStatus
     {
-        InProcess,
+        Processing = 1,
         Approved,
         Rejected
     }

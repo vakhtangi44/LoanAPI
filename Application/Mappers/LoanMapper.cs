@@ -1,13 +1,11 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
-
 namespace Application.Mappers
 {
     public static class LoanMapper
     {
-        public static LoanDto ToDto(Loan loan)
-        {
-            return new LoanDto
+        public static LoanDto ToDto(Loan loan) =>
+            new LoanDto
             {
                 Id = loan.Id,
                 LoanType = loan.LoanType,
@@ -16,20 +14,8 @@ namespace Application.Mappers
                 LoanPeriod = loan.LoanPeriod,
                 Status = loan.Status
             };
-        }
 
-        public static Loan ToEntity(LoanDto dto, int userId)
-        {
-            return new Loan
-            {
-                Id = dto.Id,
-                LoanType = dto.LoanType,
-                Amount = dto.Amount,
-                Currency = dto.Currency,
-                LoanPeriod = dto.LoanPeriod,
-                Status = dto.Status,
-                UserId = userId
-            };
-        }
+        public static Loan ToEntity(LoanDto dto, int userId) =>
+            new Loan(dto.LoanType, dto.Amount, dto.Currency, dto.LoanPeriod, userId);
     }
 }

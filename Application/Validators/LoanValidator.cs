@@ -7,17 +7,10 @@ namespace Application.Validators
     {
         public LoanValidator()
         {
-            RuleFor(x => x.Amount)
-                .GreaterThan(0);
-
-            RuleFor(x => x.LoanPeriod)
-                .InclusiveBetween(1, 60);
-
-            RuleFor(x => x.LoanType)
-                .IsInEnum();
-
-            RuleFor(x => x.Currency)
-                .IsInEnum();
+            RuleFor(x => x.Amount).GreaterThan(0);
+            RuleFor(x => x.LoanPeriod).InclusiveBetween(1, 60);
+            RuleFor(x => x.LoanType).IsInEnum();
+            RuleFor(x => x.Currency).IsInEnum();
         }
     }
 }

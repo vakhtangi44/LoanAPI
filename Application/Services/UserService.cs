@@ -1,12 +1,8 @@
 ﻿using Application.DTOs;
-using Application.DTOs.Auth;
 using Application.Exceptions;
 using Application.Interfaces;
 using Application.Mappers;
-using Domain.Entities;
-using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
-
+using Domain.Interfaces;
 
 namespace Application.Services
 {
@@ -28,25 +24,13 @@ namespace Application.Services
         public async Task<UserDto> GetByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-                throw new NotFoundException($"User with ID {id} not found.");
-
+            if (user == null) throw new NotFoundException($"User with ID {id} not found.");
             return UserMapper.ToDto(user);
         }
 
-        public async Task AddAsync(RegisterRequest request)
+        public async Task AddAsync(UserDto userDto)
         {
-            var user = new User
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                UserName = request.UserName,
-                Email = request.Email,
-                Age = request.Age,
-                MonthlyIncome = request.MonthlyIncome,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
-            };
-
+            var user = UserMapper.ToEntity(userDto);
             await _userRepository.AddAsync(user);
         }
 

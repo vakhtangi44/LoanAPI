@@ -1,12 +1,10 @@
 ﻿using Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
     public class AccountantController : ControllerBase
     {
         private readonly IAccountService _accountService;
