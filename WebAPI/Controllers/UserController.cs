@@ -1,5 +1,8 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.DTOs.UserDtos;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -9,37 +12,45 @@ namespace WebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(int id)
+        [Authorize]
+        public async Task<ActionResult<UserDto>> GetUser(Guid id)
         {
-            var user = await _userService.GetByIdAsync(id);
-            return Ok(user);
+            var user = await _userService.GetUserByIdAsync(id);
+            return _mapper.Map<UserDto>(user);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(UserDto userDto)
+        [Authorize(Roles = "Accountant")]
+        public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto createUserDto)
         {
-            await _userService.AddAsync(userDto);
-            return CreatedAtAction(nameof(GetUserById), new { id = userDto.Id }, userDto);
+            var user = _mapper.Map<User>(createUserDto);
+            var createdUser = await _userService.CreateUserAsync(user);
+            return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, _mapper.Map<UserDto>(createdUser));
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateUser(UserDto userDto)
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult<UserDto>> UpdateUser(Guid id, UpdateUserDto updateUserDto)
         {
-            await _userService.UpdateAsync(userDto);
-            return NoContent();
+            var user = _mapper.Map<User>(updateUserDto);
+            var updatedUser = await _userService.UpdateUserAsync(id, user);
+            return _mapper.Map<UserDto>(updatedUser);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Authorize(Roles = "Accountant")]
+        public async Task<ActionResult> DeleteUser(Guid id)
         {
-            await _userService.DeleteAsync(id);
+            await _userService.DeleteUserAsync(id);
             return NoContent();
         }
     }

@@ -1,38 +1,54 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs.LoanDtos;
+using AutoMapper;
+using Domain.Enums;
+using Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Accountant")]
     public class AccountantController : ControllerBase
     {
-        private readonly IAccountService _accountService;
+        private readonly ILoanService _loanService;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public AccountantController(IAccountService accountService)
+        public AccountantController(ILoanService loanService, IUserService userService, IMapper mapper)
         {
-            _accountService = accountService;
+            _loanService = loanService;
+            _userService = userService;
+            _mapper = mapper;
         }
 
-        [HttpGet("users")]
-        public async Task<IActionResult> GetAllUsers()
+        [HttpGet("loans")]
+        public async Task<ActionResult<IEnumerable<LoanDto>>> GetAllLoans()
         {
-            var users = await _accountService.GetAllUsersAsync();
-            return Ok(users);
+            var loans = await _loanService.GetAllLoansAsync();
+            return Ok(_mapper.Map<IEnumerable<LoanDto>>(loans));
         }
 
-        [HttpPost("block/{userId}")]
-        public async Task<IActionResult> BlockUser(int userId)
+        [HttpPut("loans/{id}/status")]
+        public async Task<ActionResult<LoanDto>> UpdateLoanStatus(Guid id, LoanStatus status)
         {
-            await _accountService.BlockUserAsync(userId);
-            return NoContent();
+            var loan = await _loanService.UpdateLoanStatusAsync(id, status);
+            return _mapper.Map<LoanDto>(loan);
         }
 
-        [HttpPost("unblock/{userId}")]
-        public async Task<IActionResult> UnblockUser(int userId)
+        [HttpPost("users/{userId}/block")]
+        public async Task<ActionResult> BlockUser(Guid userId, DateTime until)
         {
-            await _accountService.UnblockUserAsync(userId);
-            return NoContent();
+            await _userService.BlockUserAsync(userId, until);
+            return Ok();
+        }
+
+        [HttpPost("users/{userId}/unblock")]
+        public async Task<ActionResult> UnblockUser(Guid userId)
+        {
+            await _userService.UnblockUserAsync(userId);
+            return Ok();
         }
     }
 }

@@ -1,71 +1,111 @@
-using System.Text;
-using Application.Services;
-using Domain.Interfaces;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+// Program.cs
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using WebAPI.MIddlewares;
-using Application.Interfaces;
-using Infrastructure.Persistence.Context;
-using Infrastructure.Persistence.Repositories;
+using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Application.Services;
+using Application.Validators.UserValidators;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
+using Infrastructure.Authentication;
+using Infrastructure.Data;
+using Infrastructure.Logging;
+using Infrastructure.Repositories;
+using WebAPI.MIddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-
-// 1. Database Context
-builder.Services.AddDbContext<LoanDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// 2. Authentication (JWT)
-var jwtKey = builder.Configuration["Jwt:Key"];
-var key = Encoding.ASCII.GetBytes(jwtKey);
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
-
-// 3. Role-Based Authorization
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AccountantPolicy", policy => policy.RequireRole("Accountant"));
-    options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
-});
-
-// 4. Controllers
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
-
-// 5. Swagger for API documentation
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 6. Dependency Injection for Repositories and Services
-// Repositories
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
+// Configure AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Configure FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserValidator>();
+
+// Configure DbContext
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UserDatabase")));
+builder.Services.AddDbContext<LoanDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LoanDatabase")));
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+// Register Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
-builder.Services.AddScoped<IAccountantRepository, AccountantRepository>();
-// Services
+builder.Services.AddScoped<IExceptionLogRepository, ExceptionLogRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoanService, LoanService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
-// Build the application
+// Configure Serilog
+SerilogConfiguration.ConfigureSerilog(builder.Configuration);
+
 var app = builder.Build();
+
+// Ensure databases are created
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userContext = services.GetRequiredService<UserDbContext>();
+        var loanContext = services.GetRequiredService<LoanDbContext>();
+
+        userContext.Database.EnsureCreated();
+        loanContext.Database.EnsureCreated();
+
+        // Log successful database creation
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Databases created successfully");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while creating the databases");
+        throw;
+    }
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
@@ -76,18 +116,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Use CORS
+app.UseCors("AllowAll");
+
+// Add middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<LoggingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Add the custom exception middleware
-app.UseMiddleware<ExceptionMiddleware>();
-
-// Ensure database is created
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<LoanDbContext>();
-    dbContext.Database.EnsureCreated(); // Creates the database and schema if it doesn't exist
-}
 
 app.MapControllers();
 

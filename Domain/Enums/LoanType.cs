@@ -2,7 +2,7 @@
 {
     public enum LoanType
     {
-        FastLoan = 1,
+        FastLoan,
         AutoLoan,
         Installment
     }
