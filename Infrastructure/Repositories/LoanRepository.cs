@@ -8,9 +8,9 @@ namespace Infrastructure.Repositories
 {
     public class LoanRepository : ILoanRepository
     {
-        private readonly LoanDbContext _context;
+        private readonly UserDbContext _context;
 
-        public LoanRepository(LoanDbContext context)
+        public LoanRepository(UserDbContext context)
         {
             _context = context;
         }

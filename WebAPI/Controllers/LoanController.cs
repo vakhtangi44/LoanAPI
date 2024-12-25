@@ -11,7 +11,7 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class LoanController : ControllerBase
     {
         private readonly ILoanService _loanService;
@@ -49,13 +49,12 @@ namespace WebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<LoanDto>> CreateLoan(CreateLoanDto createLoanDto)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            if (await _userService.IsUserBlockedAsync(userId))
+            if (await _userService.IsUserBlockedAsync(createLoanDto.Id))
                 return BadRequest("User is blocked from creating loans");
 
             var loan = _mapper.Map<Loan>(createLoanDto);
-            loan.UserId = userId;
+            loan.UserId = createLoanDto.Id;
 
             var createdLoan = await _loanService.CreateLoanAsync(loan);
             return CreatedAtAction(nameof(GetLoan), new { id = createdLoan.Id }, _mapper.Map<LoanDto>(createdLoan));

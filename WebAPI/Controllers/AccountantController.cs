@@ -9,7 +9,7 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Accountant")]
+    //[Authorize(Roles = "Accountant")]
     public class AccountantController : ControllerBase
     {
         private readonly ILoanService _loanService;

@@ -3,22 +3,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    public class UserDbContext : DbContext
+    public class UserDbContext  : DbContext
     {
-        public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
+        public UserDbContext (DbContextOptions<UserDbContext > options) : base(options)
         {
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Loan> Loans { get; set; }
         public DbSet<ExceptionLog> ExceptionLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // User entity configuration
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd(); 
+                    .ValueGeneratedOnAdd(); // Auto-increment for Id
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Surname).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(20);
@@ -32,6 +34,26 @@ namespace Infrastructure.Data
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
+            // Loan entity configuration
+            modelBuilder.Entity<Loan>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.Type).IsRequired();
+                entity.Property(e => e.Amount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.Currency).IsRequired().HasMaxLength(3);
+                entity.Property(e => e.Period).IsRequired();
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+
+                // Foreign key relationship with User
+                entity.HasOne(e => e.User)
+                      .WithMany(u => u.Loans)
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade); // Cascade delete loans when a user is deleted
+            });
+
+            // ExceptionLog entity configuration
             modelBuilder.Entity<ExceptionLog>(entity =>
             {
                 entity.HasKey(e => e.Id);
