@@ -32,7 +32,7 @@ namespace UnitTests.Services
                 _loanRepositoryMock = new Mock<ILoanRepository>();
                 _userRepositoryMock = new Mock<IUserRepository>();
                 _mapperMock = new Mock<IMapper>();
-                _loanService = new LoanService(_loanRepositoryMock.Object, _userRepositoryMock.Object, _mapperMock.Object);
+                _loanService = new LoanService(_loanRepositoryMock.Object, _userRepositoryMock.Object);
             }
 
             [Fact]

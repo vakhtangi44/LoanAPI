@@ -39,7 +39,7 @@ namespace WebAPI.MIddleware
                 Source = exception.Source,
                 Timestamp = DateTime.UtcNow,
                 RequestPath = context.Request.Path,
-                UserIdentifier = context.User?.Identity?.Name
+                UserIdentifier = context.User.Identity?.Name
             };
 
             await exceptionLogRepository.LogAsync(exceptionLog);
