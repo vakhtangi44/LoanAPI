@@ -1,106 +1,140 @@
-# Loan Management API
+# Loan API
 
-This project is a Loan Management API designed with a robust architecture to handle user registration, loan management, and role-based access control. The API follows the principles of SOLID design and includes essential features like JWT authentication, logging, exception handling, and validation.
+A robust ASP.NET Core Web API for managing loans and user accounts with role-based access control.
 
-## Features
+## 🌟 Features
 
-- **User Management**: Create, update, delete, and manage users.
-- **Loan Management**: Create, update, delete, and fetch loan information.
-- **Role-Based Access Control**:
-  - Accountant: Manage loans and user accounts.
-  - User: Manage their own loans.
-- **Authentication & Authorization**: JWT-based authentication and role-based authorization.
-- **Validation**: Input validation using FluentValidation.
-- **Logging**: Integrated logging using Serilog.
-- **Exception Handling**: Middleware for handling exceptions and saving them to the database.
-- **Database**: Separate databases for user and loan management.
+### Authentication & Authorization
+- JWT-based authentication
+- Role-based access control (User and Accountant roles)
+- Password hashing for security
 
-## Technologies Used
+### Loan Management
+- Create, read, update, and delete loan applications
+- Multiple loan types (FastLoan, AutoLoan, Installment)
+- Loan status tracking (InProcess, Approved, Rejected)
+- Currency support with validation
+- Loan period validation (1-360 months)
 
-- **Language**: C#
-- **Framework**: .NET 6
-- **Authentication**: JWT (Json Web Tokens)
-- **Database**: SQL Server
-- **ORM**: Entity Framework Core
-- **Logging**: Serilog
-- **Validation**: FluentValidation
-- **API Documentation**: Swagger
+### User Management
+- User registration and profile management
+- User blocking/unblocking functionality
+- Monthly income tracking
+- Age verification (minimum 18 years)
 
-## Installation
+### Security & Validation
+- Fluent Validation for all DTOs
+- Exception handling middleware
+- Request logging
+- Custom exception types
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-repo-name.git
-   cd LoanManagementAPI
-   ```
+### Technical Features
+- Clean Architecture
+- Repository pattern
+- Auto-mapping with AutoMapper
+- Entity Framework Core
+- Multiple database contexts (User and Loan)
+- Swagger/OpenAPI documentation
 
-2. **Set up the database**:
-   Ensure SQL Server is installed and accessible.
-   Update the connection strings in `appsettings.json`:
-   ```json
-   "ConnectionStrings": {
-       "UserDatabase": "Your_User_Database_Connection_String",
-       "LoanDatabase": "Your_Loan_Database_Connection_String"
-   }
-   ```
+## 🏗️ Architecture
 
-3. **Run the application**:
-   ```bash
-   dotnet run
-   ```
+The solution follows Clean Architecture principles and is organized into four main projects:
 
-4. **Access the API**:
-   Open a browser and navigate to [http://localhost:5000/swagger](http://localhost:5000/swagger) for Swagger API documentation.
+```
+LoanAPI.sln
+├── Domain        (Enterprise business rules)
+├── Application   (Application business rules)
+├── Infrastructure(Frameworks and drivers)
+└── API           (Interface adapters)
+```
 
-## API Endpoints
+## 🚀 Getting Started
 
-### User Endpoints
+### Prerequisites
+- .NET 6.0 SDK or later
+- SQL Server
+- Visual Studio 2022 or preferred IDE
 
-- **GET** `/api/user/{id}`: Get user details.
-- **POST** `/api/user`: Create a new user (Accountant only).
-- **PUT** `/api/user/{id}`: Update user details.
-- **DELETE** `/api/user/{id}`: Delete a user (Accountant only).
+### Installation
 
-### Loan Endpoints
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/loan-api.git
+```
 
-- **GET** `/api/loan/{id}`: Get loan details.
-- **POST** `/api/loan`: Create a new loan.
-- **PUT** `/api/loan/{id}`: Update a loan.
-- **DELETE** `/api/loan/{id}`: Delete a loan.
+2. Update connection strings in `appsettings.json`
+```json
+{
+  "ConnectionStrings": {
+    "UserDatabase": "your_user_db_connection_string",
+    "LoanDatabase": "your_loan_db_connection_string"
+  }
+}
+```
 
-### Accountant Endpoints
+3. Apply database migrations
+```bash
+dotnet ef database update --context UserDbContext
+dotnet ef database update --context LoanDbContext
+```
 
-- **GET** `/api/accountant/loans`: Get all loans.
-- **PUT** `/api/accountant/loans/{id}/status`: Update the status of a loan.
-- **POST** `/api/accountant/users/{userId}/block`: Block a user.
-- **POST** `/api/accountant/users/{userId}/unblock`: Unblock a user.
+4. Run the application
+```bash
+dotnet run --project src/LoanAPI.API
+```
 
-## Architecture
+## 🔑 API Endpoints
 
-The project follows a 4-layer architecture:
+### Accountant Controller (Requires Accountant Role)
+- GET `/api/accountant/loans` - Get all loans
+- PUT `/api/accountant/loans/{id}/status` - Update loan status
+- POST `/api/accountant/users/{userId}/block` - Block user
+- POST `/api/accountant/users/{userId}/unblock` - Unblock user
 
-1. **WebAPI**: Handles HTTP requests and responses.
-2. **Application**: Contains business logic and DTOs.
-3. **Domain**: Defines core entities, enums, and interfaces.
-4. **Infrastructure**: Implements repositories, authentication, and logging.
+### Loan Controller
+- GET `/api/loan/{id}` - Get loan by ID
+- GET `/api/loan/user/{userId}` - Get user's loans
+- POST `/api/loan` - Create new loan
+- PUT `/api/loan/{id}` - Update loan
+- DELETE `/api/loan/{id}` - Delete loan
 
-## Security
+### User Controller
+- GET `/api/user/{id}` - Get user by ID
+- POST `/api/user` - Create user (Accountant only)
+- PUT `/api/user/{id}` - Update user
+- DELETE `/api/user/{id}` - Delete user (Accountant only)
 
-- Passwords are hashed using SHA-256.
-- JWT tokens are used for secure authentication and authorization.
-- Database access is controlled using role-based authorization.
+## 🔒 Security
 
-## Logging and Exception Handling
+### JWT Configuration
+Update the JWT settings in `appsettings.json`:
+```json
+{
+  "Jwt": {
+    "Key": "your_secret_key",
+    "Issuer": "your_issuer",
+    "Audience": "your_audience",
+    "ExpiryInHours": "24"
+  }
+}
+```
 
-- Logs are stored in the database and output to the console.
-- Unhandled exceptions are logged in the database for debugging.
+### Password Requirements
+- Minimum length: 6 characters
+- Must contain at least one uppercase letter
+- Must contain at least one lowercase letter
+- Must contain at least one number
 
-## Future Enhancements
+## 📝 Logging
 
-- Add unit and integration tests for all layers.
-- Implement rate limiting to prevent abuse.
-- Add support for additional loan types.
+The application uses Serilog for logging with the following sinks:
+- Console logging
+- SQL Server logging (automatic table creation)
 
----
+## 🧪 Testing
 
-Feel free to contribute to the project by submitting pull requests or issues!
+The solution includes both unit tests:
+
+```bash
+dotnet test LoanAPI.UnitTests
+```
