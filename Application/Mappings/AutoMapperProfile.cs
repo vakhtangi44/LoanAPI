@@ -9,7 +9,6 @@ namespace Application.Mappings
     {
         public AutoMapperProfile()
         {
-            // User mappings
             CreateMap<User, UserDto>();
 
             CreateMap<CreateUserDto, User>()
@@ -32,7 +31,6 @@ namespace Application.Mappings
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Loans, opt => opt.Ignore());
 
-            // Loan mappings
             CreateMap<Loan, LoanDto>();
 
             CreateMap<CreateLoanDto, Loan>()
