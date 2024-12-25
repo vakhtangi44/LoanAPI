@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.LoanDtos;
+using Application.DTOs.UserDtos;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Interfaces.Services;
@@ -38,9 +39,12 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("users/{userId}/block")]
-        public async Task<ActionResult> BlockUser(int userId, DateTime until)
+        public async Task<ActionResult> BlockUser(int userId, [FromBody] BlockUserDto blockUserDto)
         {
-            await _userService.BlockUserAsync(userId, until);
+            if (blockUserDto == null || blockUserDto.Until == default)
+                return BadRequest("Invalid block duration provided.");
+
+            await _userService.BlockUserAsync(userId, blockUserDto.Until);
             return Ok();
         }
 
