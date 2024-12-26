@@ -38,7 +38,7 @@ namespace WebAPI.Middleware
             var response = new
             {
                 error = exception is BaseException ? exception.Message : "An unexpected error occurred",
-                code = exception is BaseException ? ((BaseException)exception).Code : "INTERNAL_SERVER_ERROR"
+                code = exception is BaseException baseException ? baseException.Code : "INTERNAL_SERVER_ERROR"
             };
 
             context.Response.ContentType = "application/json";
