@@ -11,7 +11,7 @@ using Domain.Interfaces.Services;
 using Application.Services;
 using Infrastructure.Authentication;
 using Application.Validators.UserValidators;
-using WebAPI.MIddleware;
+using WebAPI.Middleware;
 using Infrastructure.Logging;
 using Serilog;
 

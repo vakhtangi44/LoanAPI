@@ -11,31 +11,21 @@ namespace WebAPI.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = "Accountant")]
-    public class AccountantController : ControllerBase
+    public class AccountantController(ILoanService loanService, IUserService userService, IMapper mapper)
+        : ControllerBase
     {
-        private readonly ILoanService _loanService;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
-
-        public AccountantController(ILoanService loanService, IUserService userService, IMapper mapper)
-        {
-            _loanService = loanService;
-            _userService = userService;
-            _mapper = mapper;
-        }
-
         [HttpGet("loans")]
         public async Task<ActionResult<IEnumerable<LoanDto>>> GetAllLoans()
         {
-            var loans = await _loanService.GetAllLoansAsync();
-            return Ok(_mapper.Map<IEnumerable<LoanDto>>(loans));
+            var loans = await loanService.GetAllLoansAsync();
+            return Ok(mapper.Map<IEnumerable<LoanDto>>(loans));
         }
 
         [HttpPut("loans/{id}/status")]
         public async Task<ActionResult<LoanDto>> UpdateLoanStatus(int id, LoanStatus status)
         {
-            var loan = await _loanService.UpdateLoanStatusAsync(id, status);
-            return _mapper.Map<LoanDto>(loan);
+            var loan = await loanService.UpdateLoanStatusAsync(id, status);
+            return mapper.Map<LoanDto>(loan);
         }
 
         [HttpPost("users/{userId}/block")]
@@ -44,14 +34,14 @@ namespace WebAPI.Controllers
             if (blockUserDto == null || blockUserDto.Until == default)
                 return BadRequest("Invalid block duration provided.");
 
-            await _userService.BlockUserAsync(userId, blockUserDto.Until);
+            await userService.BlockUserAsync(userId, blockUserDto.Until);
             return Ok();
         }
 
         [HttpPost("users/{userId}/unblock")]
         public async Task<ActionResult> UnblockUser(int userId)
         {
-            await _userService.UnblockUserAsync(userId);
+            await userService.UnblockUserAsync(userId);
             return Ok();
         }
     }

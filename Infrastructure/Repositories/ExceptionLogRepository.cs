@@ -4,24 +4,17 @@ using Infrastructure.Data;
 
 namespace Infrastructure.Repositories
 {
-    public class ExceptionLogRepository : IExceptionLogRepository
+    public class ExceptionLogRepository(UserDbContext context) : IExceptionLogRepository
     {
-        private readonly UserDbContext _context;
-
-        public ExceptionLogRepository(UserDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task LogAsync(ExceptionLog exceptionLog)
         {
-            await _context.ExceptionLogs.AddAsync(exceptionLog);
-            await _context.SaveChangesAsync();
+            await context.ExceptionLogs.AddAsync(exceptionLog);
+            await context.SaveChangesAsync();
         }
 
         public async Task<ExceptionLog> GetByIdAsync(int id)
         {
-            return (await _context.ExceptionLogs.FindAsync(id))!;
+            return (await context.ExceptionLogs.FindAsync(id))!;
         }
     }
 }

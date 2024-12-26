@@ -3,34 +3,25 @@ using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using Newtonsoft.Json;
 
-namespace WebAPI.MIddleware
+namespace WebAPI.Middleware
 {
-    public class ExceptionHandlingMiddleware
+    public class ExceptionHandlingMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
     {
-        private readonly RequestDelegate _next;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        public ExceptionHandlingMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
-        {
-            _next = next;
-            _serviceScopeFactory = serviceScopeFactory;
-        }
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await next(context);
             }
             catch (Exception ex)
             {
-                using var scope = _serviceScopeFactory.CreateScope();
+                using var scope = serviceScopeFactory.CreateScope();
                 var exceptionLogRepository = scope.ServiceProvider.GetRequiredService<IExceptionLogRepository>();
                 await HandleExceptionAsync(context, ex, exceptionLogRepository);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception, IExceptionLogRepository exceptionLogRepository)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception, IExceptionLogRepository exceptionLogRepository)
         {
             var exceptionLog = new ExceptionLog
             {
@@ -47,7 +38,7 @@ namespace WebAPI.MIddleware
             var response = new
             {
                 error = exception is BaseException ? exception.Message : "An unexpected error occurred",
-                code = exception is BaseException ? ((BaseException)exception).Code : "INTERNAL_SERVER_ERROR"
+                code = exception is BaseException baseException ? baseException.Code : "INTERNAL_SERVER_ERROR"
             };
 
             context.Response.ContentType = "application/json";

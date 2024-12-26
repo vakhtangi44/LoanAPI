@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    public class UserDbContext  : DbContext
+    public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(options)
     {
-        public UserDbContext (DbContextOptions<UserDbContext > options) : base(options)
-        {
-        }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Loan> Loans { get; set; }
         public DbSet<ExceptionLog> ExceptionLogs { get; set; }

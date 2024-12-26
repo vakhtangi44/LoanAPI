@@ -4,29 +4,16 @@ using Domain.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService(IUserRepository userRepository,IPasswordHasher passwordHasher,
+                            IJwtTokenGenerator jwtTokenGenerator) : IAuthService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher _passwordHasher;
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
-
-        public AuthService(
-            IUserRepository userRepository,
-            IPasswordHasher passwordHasher,
-            IJwtTokenGenerator jwtTokenGenerator)
-        {
-            _userRepository = userRepository;
-            _passwordHasher = passwordHasher;
-            _jwtTokenGenerator = jwtTokenGenerator;
-        }
-
         public async Task<(User User, string Token)> AuthenticateAsync(string username, string password)
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
+            var user = await userRepository.GetByUsernameAsync(username);
             if (user == null)
                 throw new InvalidOperationException("Invalid credentials");
 
-            if (!_passwordHasher.VerifyPassword(password, user.PasswordHash!))
+            if (!passwordHasher.VerifyPassword(password, user.PasswordHash!))
                 throw new InvalidOperationException("Invalid credentials");
 
             var token = await GenerateTokenAsync(user);
@@ -35,12 +22,12 @@ namespace Application.Services
 
         public async Task<bool> ValidateTokenAsync(string token)
         {
-            return await _jwtTokenGenerator.ValidateTokenAsync(token);
+            return await jwtTokenGenerator.ValidateTokenAsync(token);
         }
 
         public async Task<string> GenerateTokenAsync(User user)
         {
-            return await _jwtTokenGenerator.GenerateTokenAsync(user);
+            return await jwtTokenGenerator.GenerateTokenAsync(user);
         }
     }
 }

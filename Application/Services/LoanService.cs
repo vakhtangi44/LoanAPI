@@ -7,22 +7,11 @@ using Domain.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class LoanService : ILoanService
+    public class LoanService(ILoanRepository loanRepository, IUserRepository userRepository) : ILoanService
     {
-        private readonly ILoanRepository _loanRepository;
-        private readonly IUserRepository _userRepository;
-
-        public LoanService(
-            ILoanRepository loanRepository,
-            IUserRepository userRepository)
-        {
-            _loanRepository = loanRepository;
-            _userRepository = userRepository;
-        }
-
         public async Task<Loan> GetLoanByIdAsync(int id)
         {
-            var loan = await _loanRepository.GetByIdAsync(id);
+            var loan = await loanRepository.GetByIdAsync(id);
             if (loan == null)
                 throw new LoanNotFoundException(id);
             return loan;
@@ -30,21 +19,21 @@ namespace Application.Services
 
         public async Task<IEnumerable<Loan>> GetUserLoansAsync(int userId)
         {
-            if (!await _userRepository.ExistsAsync(userId))
+            if (!await userRepository.ExistsAsync(userId))
                 throw new UserNotFoundException(userId);
 
-            return await _loanRepository.GetByUserIdAsync(userId);
+            return await loanRepository.GetByUserIdAsync(userId);
         }
 
         public async Task<Loan> CreateLoanAsync(Loan loan)
         {
-            if (await _userRepository.IsBlockedAsync(loan.UserId))
+            if (await userRepository.IsBlockedAsync(loan.UserId))
                 throw new InvalidOperationException("User is blocked from creating loans");
 
             loan.Status = LoanStatus.InProcess;
             loan.CreatedAt = DateTime.UtcNow;
 
-            return await _loanRepository.CreateAsync(loan);
+            return await loanRepository.CreateAsync(loan);
         }
 
         public async Task<Loan> UpdateLoanAsync(int id, Loan loanUpdate)
@@ -58,7 +47,7 @@ namespace Application.Services
             loan.Period = loanUpdate.Period;
             loan.UpdatedAt = DateTime.UtcNow;
 
-            return await _loanRepository.UpdateAsync(loan);
+            return await loanRepository.UpdateAsync(loan);
         }
 
         public async Task<Loan> UpdateLoanStatusAsync(int id, LoanStatus status)
@@ -67,7 +56,7 @@ namespace Application.Services
             loan.Status = status;
             loan.UpdatedAt = DateTime.UtcNow;
 
-            return await _loanRepository.UpdateAsync(loan);
+            return await loanRepository.UpdateAsync(loan);
         }
 
         public async Task DeleteLoanAsync(int id)
@@ -77,12 +66,12 @@ namespace Application.Services
             if (loan.Status != LoanStatus.InProcess)
                 throw new InvalidOperationException("Can only delete loans that are in process");
 
-            await _loanRepository.DeleteAsync(id);
+            await loanRepository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<Loan>> GetAllLoansAsync()
         {
-            return await _loanRepository.GetAllAsync();
+            return await loanRepository.GetAllAsync();
         }
     }
 }

@@ -1,16 +1,9 @@
 ﻿using Serilog;
 
-namespace WebAPI.MIddleware
+namespace WebAPI.Middleware
 {
-    public class LoggingMiddleware
+    public class LoggingMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-
-        public LoggingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
         public async Task InvokeAsync(HttpContext context)
         {
             Log.Information(
@@ -19,7 +12,7 @@ namespace WebAPI.MIddleware
                 context.Request.Path
             );
 
-            await _next(context);
+            await next(context);
 
             Log.Information(
                 "Request {Method} {Path} completed with status code {StatusCode}",

@@ -1,12 +1,7 @@
 ﻿namespace Domain.Exceptions
 {
-    public abstract class BaseException : Exception
+    public abstract class BaseException(string message, string code) : Exception(message)
     {
-        public string Code { get; }
-
-        protected BaseException(string message, string code) : base(message)
-        {
-            Code = code;
-        }
+        public string Code { get; } = code;
     }
 }

@@ -5,20 +5,11 @@ using Domain.Interfaces.Services;
 
 namespace Application.Services
 {
-    public class UserService : IUserService
+    public class UserService(IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher _passwordHasher;
-
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
-        {
-            _userRepository = userRepository;
-            _passwordHasher = passwordHasher;
-        }
-
         public async Task<User> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await userRepository.GetByIdAsync(id);
             if (user == null)
                 throw new UserNotFoundException(id);
             return user;
@@ -26,10 +17,10 @@ namespace Application.Services
 
         public async Task<User> CreateUserAsync(User user)
         {
-            user.PasswordHash = _passwordHasher.HashPassword(user.PasswordHash!);
+            user.PasswordHash = passwordHasher.HashPassword(user.PasswordHash!);
             user.CreatedAt = DateTime.UtcNow;
             user.IsBlocked = false;
-            return await _userRepository.CreateAsync(user);
+            return await userRepository.CreateAsync(user);
         }
 
         public async Task<User> UpdateUserAsync(int id, User userUpdate)
@@ -41,7 +32,7 @@ namespace Application.Services
             user.MonthlyIncome = userUpdate.MonthlyIncome;
             user.UpdatedAt = DateTime.UtcNow;
 
-            return await _userRepository.UpdateAsync(user);
+            return await userRepository.UpdateAsync(user);
         }
 
         public async Task<User> BlockUserAsync(int id, DateTime until)
@@ -51,7 +42,7 @@ namespace Application.Services
             user.BlockedUntil = until;
             user.UpdatedAt = DateTime.UtcNow;
 
-            return await _userRepository.UpdateAsync(user);
+            return await userRepository.UpdateAsync(user);
         }
 
         public async Task<User> UnblockUserAsync(int id)
@@ -61,23 +52,23 @@ namespace Application.Services
             user.BlockedUntil = null;
             user.UpdatedAt = DateTime.UtcNow;
 
-            return await _userRepository.UpdateAsync(user);
+            return await userRepository.UpdateAsync(user);
         }
 
         public async Task DeleteUserAsync(int id)
         {
             await GetUserByIdAsync(id);
-            await _userRepository.DeleteAsync(id);
+            await userRepository.DeleteAsync(id);
         }
 
         public async Task<bool> IsUserBlockedAsync(int id)
         {
-            return await _userRepository.IsBlockedAsync(id);
+            return await userRepository.IsBlockedAsync(id);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllAsync();
+            return await userRepository.GetAllAsync();
         }
     }
 }

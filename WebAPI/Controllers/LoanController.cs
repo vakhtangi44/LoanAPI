@@ -12,28 +12,18 @@ namespace WebAPI.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class LoanController : ControllerBase
+    public class LoanController(ILoanService loanService, IUserService userService, IMapper mapper)
+        : ControllerBase
     {
-        private readonly ILoanService _loanService;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
-
-        public LoanController(ILoanService loanService, IUserService userService, IMapper mapper)
-        {
-            _loanService = loanService;
-            _userService = userService;
-            _mapper = mapper;
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<LoanDto>> GetLoan(int id)
         {
-            var loan = await _loanService.GetLoanByIdAsync(id);
+            var loan = await loanService.GetLoanByIdAsync(id);
 
             if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
-            return _mapper.Map<LoanDto>(loan);
+            return mapper.Map<LoanDto>(loan);
         }
 
         [HttpGet("user/{userId}")]
@@ -42,28 +32,28 @@ namespace WebAPI.Controllers
             if (User.IsInRole("User") && userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
 
-            var loans = await _loanService.GetUserLoansAsync(userId);
-            return Ok(_mapper.Map<IEnumerable<LoanDto>>(loans));
+            var loans = await loanService.GetUserLoansAsync(userId);
+            return Ok(mapper.Map<IEnumerable<LoanDto>>(loans));
         }
 
         [HttpPost]
         public async Task<ActionResult<LoanDto>> CreateLoan(CreateLoanDto createLoanDto)
         {
 
-            if (await _userService.IsUserBlockedAsync(createLoanDto.Id))
+            if (await userService.IsUserBlockedAsync(createLoanDto.Id))
                 return BadRequest("User is blocked from creating loans");
 
-            var loan = _mapper.Map<Loan>(createLoanDto);
+            var loan = mapper.Map<Loan>(createLoanDto);
             loan.UserId = createLoanDto.Id;
 
-            var createdLoan = await _loanService.CreateLoanAsync(loan);
-            return CreatedAtAction(nameof(GetLoan), new { id = createdLoan.Id }, _mapper.Map<LoanDto>(createdLoan));
+            var createdLoan = await loanService.CreateLoanAsync(loan);
+            return CreatedAtAction(nameof(GetLoan), new { id = createdLoan.Id }, mapper.Map<LoanDto>(createdLoan));
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<LoanDto>> UpdateLoan(int id, UpdateLoanDto updateLoanDto)
         {
-            var loan = await _loanService.GetLoanByIdAsync(id);
+            var loan = await loanService.GetLoanByIdAsync(id);
 
             if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
@@ -71,15 +61,15 @@ namespace WebAPI.Controllers
             if (loan.Status != LoanStatus.InProcess)
                 return BadRequest("Can only update loans that are in process");
 
-            var updatedLoan = _mapper.Map<Loan>(updateLoanDto);
-            var result = await _loanService.UpdateLoanAsync(id, updatedLoan);
-            return _mapper.Map<LoanDto>(result);
+            var updatedLoan = mapper.Map<Loan>(updateLoanDto);
+            var result = await loanService.UpdateLoanAsync(id, updatedLoan);
+            return mapper.Map<LoanDto>(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteLoan(int id)
         {
-            var loan = await _loanService.GetLoanByIdAsync(id);
+            var loan = await loanService.GetLoanByIdAsync(id);
 
             if (User.IsInRole("User") && loan.UserId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value))
                 return Forbid();
@@ -87,7 +77,7 @@ namespace WebAPI.Controllers
             if (loan.Status != LoanStatus.InProcess)
                 return BadRequest("Can only delete loans that are in process");
 
-            await _loanService.DeleteLoanAsync(id);
+            await loanService.DeleteLoanAsync(id);
             return NoContent();
         }
     }
