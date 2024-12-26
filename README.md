@@ -85,24 +85,36 @@ dotnet run --project src/LoanAPI.API
 
 ## 🔑 API Endpoints
 
-### Accountant Controller (Requires Accountant Role)
-- GET `/api/accountant/loans` - Get all loans
-- PUT `/api/accountant/loans/{id}/status` - Update loan status
-- POST `/api/accountant/users/{userId}/block` - Block user
-- POST `/api/accountant/users/{userId}/unblock` - Unblock user
+### 🔒 Auth
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/login` | Authenticate user | No |
 
-### Loan Controller
-- GET `/api/loan/{id}` - Get loan by ID
-- GET `/api/loan/user/{userId}` - Get user's loans
-- POST `/api/loan` - Create new loan
-- PUT `/api/loan/{id}` - Update loan
-- DELETE `/api/loan/{id}` - Delete loan
+### 👨‍💼 Accountant Controller
+*Requires Accountant Role*
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/accountant/loans` | Get all loans |
+| PUT | `/api/accountant/loans/{id}/status` | Update loan status |
+| POST | `/api/accountant/users/{userId}/block` | Block user |
+| POST | `/api/accountant/users/{userId}/unblock` | Unblock user |
 
-### User Controller
-- GET `/api/user/{id}` - Get user by ID
-- POST `/api/user` - Create user (Accountant only)
-- PUT `/api/user/{id}` - Update user
-- DELETE `/api/user/{id}` - Delete user (Accountant only)
+### 💰 Loan Controller
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/loan/{id}` | Get loan by ID | Yes |
+| GET | `/api/loan/user/{userId}` | Get user's loans | Yes |
+| POST | `/api/loan` | Create loan | Yes |
+| PUT | `/api/loan/{id}` | Update loan | Yes |
+| DELETE | `/api/loan/{id}` | Delete loan | Yes |
+
+### 👤 User Controller
+| Method | Endpoint | Description | Auth Required | Role |
+|--------|----------|-------------|---------------|------|
+| GET | `/api/user/{id}` | Get user by ID | Yes | Any |
+| POST | `/api/user` | Create user | Yes | Accountant |
+| PUT | `/api/user/{id}` | Update user | Yes | Any |
+| DELETE | `/api/user/{id}` | Delete user | Yes | Accountant |
 
 ## 🔒 Security
 
