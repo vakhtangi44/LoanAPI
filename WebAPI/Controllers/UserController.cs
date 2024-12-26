@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Accountant")]
+        [Authorize(Roles = "Accountant")]
         public async Task<ActionResult<UserDto>> CreateUser(CreateUserDto createUserDto)
         {
             var user = _mapper.Map<User>(createUserDto);
@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<UserDto>> UpdateUser(int id, UpdateUserDto updateUserDto)
         {
             var user = _mapper.Map<User>(updateUserDto);
@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Accountant")]
+        [Authorize(Roles = "Accountant")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             await _userService.DeleteUserAsync(id);

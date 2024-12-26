@@ -26,7 +26,7 @@ namespace Application.Services
             if (user == null)
                 throw new InvalidOperationException("Invalid credentials");
 
-            if (!_passwordHasher.VerifyPassword(password, user.PasswordHash))
+            if (!_passwordHasher.VerifyPassword(password, user.PasswordHash!))
                 throw new InvalidOperationException("Invalid credentials");
 
             var token = await GenerateTokenAsync(user);
